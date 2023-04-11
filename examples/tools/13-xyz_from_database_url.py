@@ -1,23 +1,22 @@
 #!/usr/bin/env python
+# Authors: Nike Dattani (nike@hpqc.org) and Vandan Revanur (vandan@hpqc.org)
+
+import requests  # First run "pip install requests"
 import pyscf
-from pyscf.tools.go_db import get_xyz
-import requests
+from pyscf.tools.get_xyz import get_xyz
 
-if __name__ == '__main__':
-    VERBOSITY = 9
-    CONV_TOL = 1e-7
-    BASIS = 'sto-3g'
-    FROZEN = 4
-    url = 'https://raw.githubusercontent.com/HPQC-LABS/goDatabase/master/benchmark_sets/gw5000.txt'
-    mol_name = 'C10H15NO2S2:GW5000.v0'
+geometry_database =   'https://raw.githubusercontent.com/HPQC-LABS/goDatabase/master/benchmark_sets/gw5000.txt'
 
-    page = requests.get(url)
-    data = page.text
+molecule_name =       'C10H15NO2S2'
+geometry_identifier = 'GW5000'
+geometry_version =    '0'
+geometry_name = molecule_name+':'+geometry_identifier+'.v'+geometry_version
 
-    molecule_xyz = get_xyz(data, mol_name)
+page = requests.get(geometry_database)
+data = page.text
+molecule_xyz = get_xyz(data, geometry_name)
 
-    print(molecule_xyz)
+print(molecule_xyz)
+mol = pyscf.M(atom=molecule_xyz, basis='sto-3g', verbose=5, spin=0, charge=0)
+print(mol)
 
-    neut_mol = pyscf.M(atom=molecule_xyz, basis=BASIS, verbose=VERBOSITY, spin=0, charge=0)
-
-    print(neut_mol)
